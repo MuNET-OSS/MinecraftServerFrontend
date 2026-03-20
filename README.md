@@ -43,14 +43,30 @@
 
 ## 快速开始
 
-### 1. 克隆项目
+### 一键部署（推荐）
+
+**Linux:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/MuNET-OSS/MinecraftServerFrontend/master/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/MuNET-OSS/MinecraftServerFrontend/master/install.ps1 | iex
+```
+
+脚本会自动下载预构建文件，引导你完成配置，并可选择进程管理方式（systemd / PM2 / NSSM）。
+
+### 手动部署
+
+#### 1. 克隆项目
 
 ```bash
-git clone <repo-url> mc-admin-panel
+git clone https://github.com/MuNET-OSS/MinecraftServerFrontend.git mc-admin-panel
 cd mc-admin-panel
 ```
 
-### 2. 构建插件
+#### 2. 构建插件
 
 ```bash
 cd plugin
@@ -59,7 +75,7 @@ cd plugin
 
 将生成的 `build/libs/MuCraftBridge.jar` 复制到 MC 服务器的 `plugins/` 目录，重启服务器。
 
-### 3. 配置并启动后端
+#### 3. 配置并启动后端
 
 ```bash
 cd backend
@@ -70,7 +86,7 @@ npm run build
 npm start
 ```
 
-### 4. 构建并部署前端
+#### 4. 构建并部署前端
 
 ```bash
 cd frontend
@@ -80,7 +96,7 @@ npm run build
 
 将 `dist/` 目录部署到 Nginx 或其他静态文件服务器，配置反向代理将 `/api` 和 `/socket.io` 转发到后端。
 
-### 5. 配置插件
+#### 5. 配置插件
 
 编辑 MC 服务器中 `plugins/MuCraftBridge/config.yml`：
 
@@ -90,7 +106,7 @@ secret: "your-secret-here"  # 与后端 .env 中的 BRIDGE_SECRET 保持一致
 status-interval: 5000
 ```
 
-### 6. 访问面板
+#### 6. 访问面板
 
 打开浏览器访问部署地址，使用默认账号登录：
 
