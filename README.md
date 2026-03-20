@@ -52,7 +52,7 @@ curl -fsSL https://raw.githubusercontent.com/MuNET-OSS/MinecraftServerFrontend/m
 
 **Windows (PowerShell):**
 ```powershell
-irm https://raw.githubusercontent.com/MuNET-OSS/MinecraftServerFrontend/master/install.ps1 | iex
+powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/MuNET-OSS/MinecraftServerFrontend/master/install.ps1 | iex"
 ```
 
 脚本会自动下载预构建文件，引导你完成配置，并可选择进程管理方式（systemd / PM2 / NSSM）。

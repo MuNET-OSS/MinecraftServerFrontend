@@ -65,7 +65,7 @@ if ($major -lt 18) {
     exit 1
 }
 Write-Ok "Node.js $nodeVer"
-Write-Ok "npm $(npm -v 2>$null)"
+Write-Ok "npm $(npm.cmd -v 2>$null)"
 
 # ─────────────────────────────────
 # Step 1: Install directory
@@ -107,7 +107,7 @@ Write-Ok "插件已下载: $pluginPath"
 
 Write-Info "安装后端依赖..."
 Push-Location $backendDir
-npm install --omit=dev --silent 2>&1 | Out-Null
+npm.cmd install --omit=dev --silent 2>&1 | Out-Null
 Pop-Location
 Write-Ok "依赖安装完成"
 
@@ -225,7 +225,7 @@ switch ($PM_CHOICE) {
         $pm2 = Get-Command pm2 -ErrorAction SilentlyContinue
         if (-not $pm2) {
             Write-Info "安装 PM2..."
-            npm install -g pm2
+            npm.cmd install -g pm2
         }
         Push-Location $backendDir
         pm2 start dist/index.js --name mc-admin-panel
