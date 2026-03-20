@@ -4,6 +4,8 @@ build/
 .gradle/
 *.jar
 .env
+.env.local
+.env.*.local
 *.db
 *.sqlite
 *.log

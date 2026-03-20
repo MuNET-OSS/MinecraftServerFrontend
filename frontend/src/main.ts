@@ -7,8 +7,18 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 
-const app = createApp(App)
-app.use(createPinia())
-app.use(router)
-app.use(naive)
-app.mount('#app')
+async function bootstrap() {
+  // Demo mode — mock all API calls with fake data, no backend needed
+  if (import.meta.env.VITE_DEMO === 'true') {
+    const { initDemoMode } = await import('./mock/index')
+    initDemoMode()
+  }
+
+  const app = createApp(App)
+  app.use(createPinia())
+  app.use(router)
+  app.use(naive)
+  app.mount('#app')
+}
+
+bootstrap()
