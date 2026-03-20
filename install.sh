@@ -95,7 +95,7 @@ check_deps
 # Step 1: Choose install directory
 # ─────────────────────────────────
 echo ""
-echo -e "${BOLD}─── 步骤 1/5: 安装目录 ───${NC}"
+echo -e "${BOLD}─── 步骤 1/6: 安装目录 ───${NC}"
 ask "安装目录" "/opt/mc-admin-panel" INSTALL_DIR
 
 mkdir -p "$INSTALL_DIR"
@@ -105,7 +105,7 @@ ok "安装目录: $INSTALL_DIR"
 # Step 2: Download release files
 # ─────────────────────────────────
 echo ""
-echo -e "${BOLD}─── 步骤 2/5: 下载文件 ───${NC}"
+echo -e "${BOLD}─── 步骤 2/6: 下载文件 ───${NC}"
 
 info "下载后端..."
 curl -fSL "$BASE_URL/backend-dist.tar.gz" -o /tmp/backend-dist.tar.gz
@@ -134,7 +134,7 @@ rm -f /tmp/backend-dist.tar.gz /tmp/frontend-dist.tar.gz
 # Step 3: Configuration
 # ─────────────────────────────────
 echo ""
-echo -e "${BOLD}─── 步骤 3/5: 配置 ───${NC}"
+echo -e "${BOLD}─── 步骤 3/6: 配置 ───${NC}"
 echo ""
 
 ENV_FILE="$INSTALL_DIR/backend/.env"
@@ -205,7 +205,7 @@ ok "配置已写入: $ENV_FILE"
 # Step 4: Install plugin
 # ─────────────────────────────────
 echo ""
-echo -e "${BOLD}─── 步骤 4/5: 安装插件 ───${NC}"
+echo -e "${BOLD}─── 步骤 4/6: 安装插件 ───${NC}"
 
 PLUGINS_DIR="$CONF_MC_DIR/plugins"
 if [ -d "$PLUGINS_DIR" ]; then
@@ -222,7 +222,7 @@ fi
 # Step 5: Process management
 # ─────────────────────────────────
 echo ""
-echo -e "${BOLD}─── 步骤 5/5: 进程管理 ───${NC}"
+echo -e "${BOLD}─── 步骤 5/6: 进程管理 ───${NC}"
 echo ""
 echo "  1) systemd  — 创建系统服务，开机自启（推荐）"
 echo "  2) PM2      — 使用 PM2 管理进程"
@@ -282,6 +282,97 @@ EOF
     echo "  手动启动: cd $INSTALL_DIR/backend && node dist/index.js"
     ;;
 esac
+
+# ─────────────────────────────────
+# Step 6: Web server (Nginx)
+# ─────────────────────────────────
+echo ""
+echo -e "${BOLD}─── 步骤 6/6: Web 服务器 ───${NC}"
+echo ""
+
+if command -v nginx &>/dev/null; then
+  ok "检测到 Nginx: $(nginx -v 2>&1 | head -1)"
+  echo ""
+
+  ask "面板监听端口 (Nginx)" "80" NGINX_PORT
+
+  # Detect config directory
+  NGINX_CONF_DIR=""
+  if [ -d "/etc/nginx/sites-available" ]; then
+    NGINX_CONF_DIR="/etc/nginx/sites-available"
+    NGINX_ENABLED_DIR="/etc/nginx/sites-enabled"
+  elif [ -d "/etc/nginx/conf.d" ]; then
+    NGINX_CONF_DIR="/etc/nginx/conf.d"
+    NGINX_ENABLED_DIR=""
+  fi
+
+  if [ -n "$NGINX_CONF_DIR" ]; then
+    if ask_yn "自动生成并启用 Nginx 配置？" "Y"; then
+      NGINX_CONF_FILE="$NGINX_CONF_DIR/mc-admin-panel.conf"
+
+      sudo tee "$NGINX_CONF_FILE" > /dev/null <<NGINXEOF
+server {
+    listen $NGINX_PORT;
+    server_name _;
+
+    root $INSTALL_DIR/frontend/dist;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:$CONF_PORT;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    }
+
+    location /socket.io/ {
+        proxy_pass http://127.0.0.1:$CONF_PORT;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+    }
+}
+NGINXEOF
+
+      ok "Nginx 配置已写入: $NGINX_CONF_FILE"
+
+      # Enable site (sites-available/sites-enabled pattern)
+      if [ -n "$NGINX_ENABLED_DIR" ] && [ -d "$NGINX_ENABLED_DIR" ]; then
+        sudo ln -sf "$NGINX_CONF_FILE" "$NGINX_ENABLED_DIR/mc-admin-panel.conf"
+        ok "已创建软链接到 $NGINX_ENABLED_DIR/"
+      fi
+
+      # Test and reload
+      if sudo nginx -t 2>&1 | grep -q "successful"; then
+        sudo systemctl reload nginx 2>/dev/null || sudo nginx -s reload 2>/dev/null
+        ok "Nginx 配置测试通过并已重载"
+        echo ""
+        echo -e "  ${GREEN}面板访问地址: http://$(hostname -I 2>/dev/null | awk '{print $1}' || echo 'localhost'):${NGINX_PORT}${NC}"
+      else
+        warn "Nginx 配置测试失败，请手动检查:"
+        echo "  sudo nginx -t"
+        echo "  sudo systemctl reload nginx"
+      fi
+    else
+      info "已跳过 Nginx 自动配置"
+    fi
+  else
+    warn "未找到 Nginx 配置目录，请手动配置"
+  fi
+else
+  warn "未检测到 Nginx，请手动配置 Web 服务器"
+  echo ""
+  echo "  前端文件位于: $INSTALL_DIR/frontend/dist/"
+  echo "  需要将 /api/ 和 /socket.io/ 反向代理到 http://127.0.0.1:$CONF_PORT"
+  echo ""
+  echo "  安装 Nginx: sudo apt install nginx (Debian/Ubuntu)"
+  echo "              sudo yum install nginx (CentOS/RHEL)"
+fi
 
 # ─────────────────────────────────
 # Done!
