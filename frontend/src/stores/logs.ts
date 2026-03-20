@@ -29,10 +29,10 @@ export const useLogStore = defineStore('logs', () => {
     persist()
   }
 
-  function setHistory(historyLines: string[]) {
-    // Only set history if we have no existing logs (first connect)
-    // If we already have logs from sessionStorage, just append new ones
-    if (lines.value.length === 0) {
+  function setHistory(historyLines: string[], force = false) {
+    // On first connect: set history only if empty
+    // On reconnect (force=true): replace with fresh history from server
+    if (force || lines.value.length === 0) {
       lines.value = historyLines.slice(-MAX_LINES)
       persist()
     }

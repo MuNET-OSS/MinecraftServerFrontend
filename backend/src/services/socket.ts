@@ -6,7 +6,11 @@ import { config } from '../config.js';
 let io: SocketIOServer;
 
 export function initSocketServer(server: http.Server): SocketIOServer {
-  io = new SocketIOServer(server, { cors: { origin: '*' } });
+  io = new SocketIOServer(server, {
+    cors: { origin: '*' },
+    pingInterval: 15000,
+    pingTimeout: 10000,
+  });
 
   // JWT auth middleware
   io.use((socket, next) => {
