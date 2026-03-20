@@ -1,0 +1,80 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root, .dark-theme {
+  --body-bg: #101014;
+  --body-color: rgba(255, 255, 255, 0.82);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+  --card-color: rgba(24, 24, 28, 0.9);
+  --border-color: rgba(255, 255, 255, 0.09);
+  --text-color-3: rgba(255, 255, 255, 0.5);
+  --command-input-bg: rgba(255, 255, 255, 0.05);
+  --command-input-border: rgba(255, 255, 255, 0.1);
+  --command-input-color: #fff;
+  --login-bg: #0d0d12;
+}
+
+.light-theme {
+  --body-bg: #f3f4f6;
+  --body-color: #333639;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+  --card-color: rgba(255, 255, 255, 0.9);
+  --border-color: rgba(0, 0, 0, 0.09);
+  --text-color-3: rgba(0, 0, 0, 0.5);
+  --command-input-bg: #ffffff;
+  --command-input-border: #e5e7eb;
+  --command-input-color: #374151;
+  --login-bg: #f9fafb;
+}
+
+html, body, #app {
+  height: 100%;
+  font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--body-bg, #101014);
+  color: var(--body-color, rgba(255, 255, 255, 0.82));
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* View Transitions setup */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, rgba(255, 255, 255, 0.2));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, rgba(255, 255, 255, 0.3));
+}
+
+/* Page Transitions */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}

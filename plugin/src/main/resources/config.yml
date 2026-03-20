@@ -1,0 +1,7 @@
+# MuCraftBridge 配置
+# WebSocket 服务端口
+port: 25580
+# 连接密钥 (Node.js 后端连接时需要提供)
+secret: "change-me-secret"
+# 状态推送间隔 (毫秒)
+status-interval: 5000

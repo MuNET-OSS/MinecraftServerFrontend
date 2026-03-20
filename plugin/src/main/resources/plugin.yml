@@ -1,0 +1,6 @@
+name: MuCraftBridge
+version: '1.0.0'
+main: com.mucraft.bridge.MuCraftBridge
+api-version: '1.21'
+description: WebSocket bridge for MuCraft admin panel
+author: ''
