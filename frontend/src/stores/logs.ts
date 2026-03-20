@@ -49,5 +49,9 @@ export const useLogStore = defineStore('logs', () => {
     initialized.value = true
   }
 
-  return { lines, initialized, addLine, setHistory, addCommandResponse, markInitialized }
+  function markUninitialized() {
+    initialized.value = false
+  }
+
+  return { lines, initialized, addLine, setHistory, addCommandResponse, markInitialized, markUninitialized }
 })

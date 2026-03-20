@@ -3,14 +3,17 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import XTerminal from '../components/XTerminal.vue'
 import { useLogStore } from '../stores/logs'
+import { useSocket } from '../composables/useSocket'
 import { http } from '../api/http'
 
 const message = useMessage()
 const logStore = useLogStore()
+const { disconnect, connect } = useSocket()
 
 const terminalRef = ref<InstanceType<typeof XTerminal>>()
 const commandInput = ref('')
 const sending = ref(false)
+const refreshing = ref(false)
 
 // Load command history from localStorage
 const savedHistory = localStorage.getItem('mc_command_history')
@@ -41,6 +44,18 @@ async function loadServerCommands() {
   } catch {
     // silent
   }
+}
+
+function handleRefresh() {
+  refreshing.value = true
+  disconnect()
+  logStore.markUninitialized()
+  setTimeout(() => {
+    connect()
+    logStore.markInitialized()
+    refreshing.value = false
+    message.success('日志已刷新')
+  }, 500)
 }
 
 onMounted(() => {
@@ -192,6 +207,13 @@ function handleInputEnter(e: KeyboardEvent) {
       <XTerminal ref="terminalRef" />
     </div>
     <div class="input-bar">
+      <button class="refresh-btn" :disabled="refreshing" @click="handleRefresh" title="刷新日志">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: refreshing }">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+      </button>
       <input
         ref="inputRef"
         v-model="commandInput"
@@ -232,6 +254,36 @@ function handleInputEnter(e: KeyboardEvent) {
   flex-shrink: 0;
 }
 
+.refresh-btn {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--command-input-border, #3a3a3c);
+  border-radius: 8px;
+  background: var(--command-input-bg, #1e1e2e);
+  color: var(--command-input-color, #cdd6f4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.refresh-btn:hover {
+  border-color: #f472b6;
+  background: rgba(244, 114, 182, 0.1);
+}
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.refresh-btn .spinning {
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .command-input {
   flex: 1;
   min-width: 0;
@@ -245,7 +297,6 @@ function handleInputEnter(e: KeyboardEvent) {
   font-size: 15px;
   outline: none;
   transition: border-color 0.2s, background 0.2s, color 0.2s;
-  /* Allow text to scroll horizontally when input is long */
   overflow-x: auto;
   white-space: nowrap;
 }

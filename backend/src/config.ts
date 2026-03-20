@@ -15,4 +15,5 @@ export const config = {
     apiKey: process.env.UPTIME_API_KEY || '',
     monitorIds: (process.env.UPTIME_MONITOR_IDS || '3,6').split(','),
   },
+  externalApiKey: process.env.EXTERNAL_API_KEY || '',
 };

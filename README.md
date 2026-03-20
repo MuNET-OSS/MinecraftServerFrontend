@@ -10,6 +10,7 @@
 - **公告系统** — 创建/编辑/删除公告，一键推送至游戏内
 - **插件管理** — 查看已安装插件列表及状态
 - **Uptime 监控** — 集成 Uptime Kuma，展示服务器延迟与可用率图表
+- **External API** — API Key 认证的外部接口，供 AI 工具或自动化脚本调用
 - **响应式设计** — 桌面端侧边栏 + 移动端底部导航栏，完美适配各种设备
 - **暗色/亮色主题** — 支持一键切换，带圆形扩散过渡动画
 
@@ -114,6 +115,32 @@ status-interval: 5000
 | `UPTIME_URL` | `http://localhost:3001` | Uptime Kuma 地址（可选） |
 | `UPTIME_API_KEY` | — | Uptime Kuma API 密钥（可选） |
 | `UPTIME_MONITOR_IDS` | `3,6` | 监控项 ID（可选） |
+| `EXTERNAL_API_KEY` | — | 外部 API 密钥，用于 AI 工具/自动化接入（可选） |
+
+## External API
+
+设置 `EXTERNAL_API_KEY` 环境变量后，可通过以下接口实现外部自动化控制：
+
+**认证方式：** 所有请求需携带 Header `Authorization: Bearer <你的API_KEY>`
+
+| 方法 | 路径 | 说明 | 请求体 |
+|------|------|------|--------|
+| GET | `/api/external/status` | 获取服务器状态（TPS、内存、CPU、玩家、MSPT） | — |
+| GET | `/api/external/players` | 获取在线玩家列表 | — |
+| POST | `/api/external/command` | 执行 MC 服务器命令 | `{"command": "say Hello"}` |
+
+**示例：**
+
+```bash
+# 查询服务器状态
+curl -H "Authorization: Bearer YOUR_API_KEY" http://localhost:3000/api/external/status
+
+# 执行服务器命令
+curl -X POST -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"command":"say Hello from API"}' \
+  http://localhost:3000/api/external/command
+```
 
 ## 项目结构
 

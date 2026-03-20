@@ -15,6 +15,7 @@ import { authMiddleware } from './middleware/auth.js';
 import { bridgeService } from './services/bridge.js';
 import consoleRouter from './routes/console.js';
 import pluginsRouter from './routes/plugins.js';
+import externalRouter from './routes/external.js';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/external', externalRouter);
 
 app.use('/api', (req, res, next) => {
   // Skip auth for health and auth routes
