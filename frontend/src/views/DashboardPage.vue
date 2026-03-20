@@ -235,6 +235,7 @@ interface UptimeMonitor {
   responseTime: number;
   uptime1d: number;       // 0-1 ratio
   uptime30d: number;      // 0-1 ratio
+  hostname?: string;
 }
 
 interface UptimeHistoryItem {
