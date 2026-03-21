@@ -301,7 +301,7 @@ function handleInputEnter(e: KeyboardEvent) {
   white-space: nowrap;
 }
 .command-input:focus {
-  border-color: #f472b6;
+  border-color: var(--accent-color, #f472b6);
 }
 .command-input::placeholder {
   color: var(--text-color-3, #555);
@@ -313,7 +313,7 @@ function handleInputEnter(e: KeyboardEvent) {
   padding: 0 20px;
   border: none;
   border-radius: 8px;
-  background: #f472b6;
+  background: var(--accent-color, #f472b6);
   color: #fff;
   font-size: 15px;
   font-weight: 600;
@@ -321,7 +321,7 @@ function handleInputEnter(e: KeyboardEvent) {
   transition: background 0.2s;
 }
 .send-btn:hover {
-  background: #ec4899;
+  background: var(--accent-pressed, #ec4899);
 }
 .send-btn:disabled {
   background: #333;

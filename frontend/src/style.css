@@ -4,18 +4,27 @@
   box-sizing: border-box;
 }
 
+/* CSS variables are now dynamically injected by useTheme.ts (Material You tonal palette).
+   The values below serve as initial fallbacks before JS hydration. */
+
 :root, .dark-theme {
   --body-bg: #101014;
   --body-color: rgba(255, 255, 255, 0.82);
   --scrollbar-thumb: rgba(255, 255, 255, 0.2);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
   --card-color: rgba(24, 24, 28, 0.9);
+  --surface-high: rgba(30, 30, 34, 0.95);
   --border-color: rgba(255, 255, 255, 0.09);
+  --border-subtle: rgba(255, 255, 255, 0.04);
   --text-color-3: rgba(255, 255, 255, 0.5);
+  --active-indicator: rgba(255, 255, 255, 0.08);
   --command-input-bg: rgba(255, 255, 255, 0.05);
   --command-input-border: rgba(255, 255, 255, 0.1);
   --command-input-color: #fff;
   --login-bg: #0d0d12;
+  --accent-color: #f472b6;
+  --accent-hover: #f9a8d4;
+  --accent-pressed: #ec4899;
 }
 
 .light-theme {
@@ -24,8 +33,11 @@
   --scrollbar-thumb: rgba(0, 0, 0, 0.2);
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
   --card-color: rgba(255, 255, 255, 0.9);
+  --surface-high: rgba(255, 255, 255, 0.95);
   --border-color: rgba(0, 0, 0, 0.09);
+  --border-subtle: rgba(0, 0, 0, 0.04);
   --text-color-3: rgba(0, 0, 0, 0.5);
+  --active-indicator: rgba(0, 0, 0, 0.05);
   --command-input-bg: #ffffff;
   --command-input-border: #e5e7eb;
   --command-input-color: #374151;
@@ -35,8 +47,8 @@
 html, body, #app {
   height: 100%;
   font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--body-bg, #101014);
-  color: var(--body-color, rgba(255, 255, 255, 0.82));
+  background-color: var(--body-bg);
+  color: var(--body-color);
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
@@ -47,7 +59,7 @@ html, body, #app {
   mix-blend-mode: normal;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar — uses tonal accent */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -56,11 +68,11 @@ html, body, #app {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb, rgba(255, 255, 255, 0.2));
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover, rgba(255, 255, 255, 0.3));
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Page Transitions */

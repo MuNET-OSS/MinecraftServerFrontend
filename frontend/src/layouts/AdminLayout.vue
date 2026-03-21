@@ -5,11 +5,12 @@ import type { Component } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
   NLayout, NLayoutSider, NLayoutContent, NLayoutHeader,
-  NMenu, NButton, NSpace, NText, NIcon
+  NMenu, NButton, NSpace, NText, NIcon, NPopover
 } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
 import { useAuthStore } from '../stores/auth'
 import { useTheme } from '../composables/useTheme'
+import { colorPresets } from '../composables/useTheme'
 import { 
   SpeedometerOutline, 
   PeopleOutline, 
@@ -17,13 +18,14 @@ import {
   MegaphoneOutline, 
   HardwareChipOutline,
   SunnyOutline,
-  MoonOutline
+  MoonOutline,
+  ColorPaletteOutline
 } from '@vicons/ionicons5'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const { isDark, toggleTheme } = useTheme()
+const { isDark, toggleTheme, accentIndex, setAccentColor, accentColor } = useTheme()
 const collapsed = ref(false)
 
 function renderIcon (icon: Component) {
@@ -134,7 +136,7 @@ function handleThemeToggle(event: MouseEvent) {
       class="desktop-sider"
     >
       <div style="padding: 0 24px 24px; display: flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.3s;" :style="{ padding: collapsed ? '0 0 24px' : '0 24px 24px' }">
-        <div :style="{ width: collapsed ? '32px' : '40px', height: collapsed ? '32px' : '40px', borderRadius: '8px', background: '#f472b6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: collapsed ? '16px' : '20px', transition: 'all 0.3s' }">⛏</div>
+        <div :style="{ width: collapsed ? '32px' : '40px', height: collapsed ? '32px' : '40px', borderRadius: '8px', background: accentColor.base, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: collapsed ? '16px' : '20px', transition: 'all 0.3s' }">⛏</div>
         <div v-show="!collapsed" style="font-size: 22px; font-weight: 700; white-space: nowrap; letter-spacing: 0.5px; transition: opacity 0.3s;">
           MC 管理面板
         </div>
@@ -154,7 +156,7 @@ function handleThemeToggle(event: MouseEvent) {
       <!-- Header -->
       <NLayoutHeader class="top-header" bordered style="height: 64px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between;">
         <div class="header-logo mobile-only" style="display: flex; align-items: center; gap: 8px;">
-          <div :style="{ width: '40px', height: '40px', borderRadius: '8px', background: '#f472b6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }">⛏</div>
+          <div :style="{ width: '40px', height: '40px', borderRadius: '8px', background: accentColor.base, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }">⛏</div>
           <div class="mobile-title" style="font-size: 22px; font-weight: 700; white-space: nowrap; letter-spacing: 0.5px;">
           MC 管理面板
         </div>
@@ -162,6 +164,26 @@ function handleThemeToggle(event: MouseEvent) {
         <div class="desktop-only"></div>
         <NSpace align="center" :size="16" :wrap="false" style="flex-shrink: 0;">
           <NText depth="2" class="desktop-only">{{ authStore.username }}，欢迎回来</NText>
+          <NPopover trigger="click" placement="bottom" :style="{ padding: '12px' }">
+            <template #trigger>
+              <NButton circle size="small" secondary>
+                <template #icon>
+                  <NIcon :component="ColorPaletteOutline" />
+                </template>
+              </NButton>
+            </template>
+            <div class="color-picker-grid">
+              <div
+                v-for="(preset, idx) in colorPresets"
+                :key="preset.name"
+                class="color-swatch"
+                :class="{ active: accentIndex === idx }"
+                :style="{ backgroundColor: preset.base }"
+                :title="preset.name"
+                @click="setAccentColor(idx)"
+              />
+            </div>
+          </NPopover>
           <NButton circle size="small" secondary @click="handleThemeToggle">
             <template #icon>
               <NIcon :component="isDark ? MoonOutline : SunnyOutline" />
@@ -172,7 +194,7 @@ function handleThemeToggle(event: MouseEvent) {
       </NLayoutHeader>
 
       <!-- Content Area -->
-      <NLayoutContent class="main-content" :style="{ background: isDark ? '#101014' : '#f3f4f6', overflowX: 'hidden' }">
+      <NLayoutContent class="main-content" :style="{ background: 'var(--body-bg)', overflowX: 'hidden' }">
         <div class="layout-container">
           <slot />
         </div>
@@ -270,7 +292,31 @@ function handleThemeToggle(event: MouseEvent) {
   }
 
   .mobile-tab-item.active {
-    color: #f472b6;
+    color: var(--accent-color, #f472b6);
   }
+}
+
+.color-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 2px solid transparent;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.active {
+  border-color: var(--body-color, #fff);
+  box-shadow: 0 0 0 2px var(--accent-color, #f472b6);
 }
 </style>

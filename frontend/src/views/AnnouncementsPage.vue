@@ -351,8 +351,8 @@ onMounted(() => {
   transform: scale(1.15);
 }
 .color-swatch.active {
-  border-color: #f472b6;
-  box-shadow: 0 0 0 2px rgba(244, 114, 182, 0.4), inset 0 0 0 1px rgba(0,0,0,0.2);
+  border-color: var(--accent-color, #f472b6);
+  box-shadow: 0 0 0 2px var(--accent-color, rgba(244, 114, 182, 0.4)), inset 0 0 0 1px rgba(0,0,0,0.2);
   transform: scale(1.15);
 }
 </style>

@@ -16,7 +16,7 @@
       <n-gi>
         <n-card class="stat-card">
           <div class="stat-header">
-            <n-icon size="24" color="#f472b6" :component="SpeedometerOutline" />
+            <n-icon size="24" :color="accentColor.base" :component="SpeedometerOutline" />
             <span class="stat-title">TPS</span>
           </div>
           <n-statistic v-if="tps">
@@ -150,7 +150,7 @@
                     </div>
                   </div>
                   <div style="text-align: right;">
-                    <div :style="{ fontSize: '28px', fontWeight: 700, lineHeight: 1, color: index === 0 ? '#f472b6' : '#3b82f6' }">
+                    <div :style="{ fontSize: '28px', fontWeight: 700, lineHeight: 1, color: index === 0 ? accentColor.base : '#3b82f6' }">
                       {{ monitor.responseTime }}<span style="font-size: 14px; font-weight: normal; margin-left: 4px;">ms</span>
                     </div>
                   </div>
@@ -244,7 +244,7 @@ interface UptimeHistoryItem {
 }
 
 const { tps, players, memory, cpu, rconStatus } = useServerStatus()
-const { isDark } = useTheme()
+const { isDark, accentColor } = useTheme()
 const announcements = ref<Announcement[]>([])
 const msg = useMessage()
 const restarting = ref(false)
@@ -283,8 +283,18 @@ const chartOption = computed(() => {
     return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`
   })
   
+  const accentBase = accentColor.value.base
+  // Convert hex to rgba for area gradient
+  const hexToRgba = (hex: string, alpha: number) => {
+    const n = parseInt(hex.slice(1), 16)
+    const r = (n >> 16) & 255
+    const g = (n >> 8) & 255
+    const b = n & 255
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+
   const series = uptimeMonitors.value.map((m, index) => {
-    const color = index === 0 ? '#f472b6' : '#3b82f6'
+    const color = index === 0 ? accentBase : '#3b82f6'
     const data = uptimeHistory.value.map(h => {
       const found = h.monitors.find((mon) => String(mon.id) === String(m.id))
       return found ? found.responseTime : null
@@ -301,9 +311,9 @@ const chartOption = computed(() => {
           type: 'linear' as const,
           x: 0, y: 0, x2: 0, y2: 1,
           colorStops: [{
-            offset: 0, color: index === 0 ? 'rgba(244, 114, 182, 0.3)' : 'rgba(59, 130, 246, 0.3)'
+            offset: 0, color: index === 0 ? hexToRgba(accentBase, 0.3) : 'rgba(59, 130, 246, 0.3)'
           }, {
-            offset: 1, color: index === 0 ? 'rgba(244, 114, 182, 0.0)' : 'rgba(59, 130, 246, 0.0)'
+            offset: 1, color: index === 0 ? hexToRgba(accentBase, 0) : 'rgba(59, 130, 246, 0.0)'
           }]
         }
       },
@@ -473,8 +483,8 @@ onUnmounted(() => {
 }
 
 .player-card:hover {
-  background: rgba(244, 114, 182, 0.1);
-  border-color: rgba(244, 114, 182, 0.3);
+  background: var(--active-indicator, rgba(244, 114, 182, 0.1));
+  border-color: var(--border-color, rgba(244, 114, 182, 0.3));
   transform: translateY(-2px);
 }
 
