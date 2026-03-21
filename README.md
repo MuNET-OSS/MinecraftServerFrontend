@@ -8,14 +8,6 @@
 |:---:|:---:|
 | ![仪表盘](docs/screenshots/dashboard.png) | ![仪表盘-亮色](docs/screenshots/dashboard-light.png) |
 
-| 控制台 | 玩家管理 |
-|:---:|:---:|
-| ![控制台](docs/screenshots/console.png) | ![玩家管理](docs/screenshots/players.png) |
-
-| 公告管理 | 插件管理 |
-|:---:|:---:|
-| ![公告管理](docs/screenshots/announcements.png) | ![插件管理](docs/screenshots/plugins.png) |
-
 ## 功能特性
 
 - **实时仪表盘** — TPS、内存、CPU、在线玩家数等核心指标实时展示
